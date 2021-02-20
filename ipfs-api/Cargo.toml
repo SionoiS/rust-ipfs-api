@@ -15,7 +15,7 @@ license                   = "MIT OR Apache-2.0"
 travis-ci                 = { repository = "ferristseng/rust-ipfs-api" }
 
 [features]
-default                   = ["with-reqwest"]
+default                   = ["with-hyper-tls", "with-builder"]
 with-hyper-tls            = ["with-hyper", "hyper-tls"]
 with-hyper-rustls         = ["with-hyper", "hyper-rustls"]
 with-hyper                = ["hyper", "hyper-multipart-rfc7578", "failure"]
@@ -41,7 +41,7 @@ hyper                     = { version = "0.14", features = ["http1", "http2", "c
 hyper-tls                 = { version = "0.5", optional = true }
 hyper-rustls              = { version = "0.22", optional = true }
 hyper-multipart-rfc7578   = { version = "0.5", optional = true }
-reqwest                   = { version = "0.11.0", features = ["multipart", "stream", "rustls-tls"], optional = true }
+reqwest                   = { version = "0.11", features = ["multipart", "stream"], optional = true }
 serde                     = { version = "1.0", features = ["derive"] }
 serde_json                = "1.0"
 serde_urlencoded          = "0.7"
