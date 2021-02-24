@@ -1,6 +1,14 @@
 use crate::error::Error;
 use async_trait::async_trait;
 use bytes::Bytes;
+// Copyright 2021 rust-ipfs-api Developers
+//
+// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// copied, modified, or distributed except according to those terms.
+//
+
 use futures::{FutureExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
 use http::{
     header::{HeaderName, HeaderValue},
@@ -22,6 +30,9 @@ pub struct HyperBackend {
 }
 
 impl Default for HyperBackend {
+    /// Creates an `IpfsClient` connected to the endpoint specified in ~/.ipfs/api.
+    /// If not found, tries to connect to `localhost:5001`.
+    ///
     fn default() -> Self {
         Self::from_ipfs_config()
             .unwrap_or_else(|| Self::from_host_and_port(Scheme::HTTP, "localhost", 5001).unwrap())

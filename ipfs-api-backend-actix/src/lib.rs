@@ -1,4 +1,4 @@
-// Copyright 2019 rust-ipfs-api Developers
+// Copyright 2021 rust-ipfs-api Developers
 //
 // Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
 // http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
@@ -12,4 +12,7 @@ mod backend;
 mod error;
 
 pub use crate::{backend::ActixBackend as IpfsClient, error::Error};
-pub use ipfs_api_prelude::{request, response, IpfsApi};
+pub use ipfs_api_prelude::{
+    request::{self, KeyType, Logger, LoggingLevel, ObjectTemplate},
+    response, IpfsApi, TryFromUri,
+};

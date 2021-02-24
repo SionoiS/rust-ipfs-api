@@ -2,8 +2,9 @@
 
 members = [
   "ipfs-api",
-  "ipfs-api-prelude",
+  "ipfs-api-examples",
   "ipfs-api-backend-actix",
   "ipfs-api-backend-hyper",
-  "ipfs-api-backend-reqwest"
+  "ipfs-api-backend-reqwest",
+  "ipfs-api-prelude"
 ]
