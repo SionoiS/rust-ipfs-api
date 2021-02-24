@@ -1,3 +1,11 @@
+// Copyright 2021 rust-ipfs-api Developers
+//
+// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// copied, modified, or distributed except according to those terms.
+//
+
 use crate::error::Error;
 
 use async_trait::async_trait;
@@ -16,7 +24,7 @@ use ipfs_api_prelude::{ApiRequest, Backend, TryFromUri};
 
 use reqwest::multipart::Form;
 
-use reqwest::{Body, Client, Request, Response};
+use reqwest::{Client, Request, Response};
 
 use serde::Serialize;
 
@@ -51,14 +59,14 @@ impl Backend for ReqwestBackend {
     fn build_base_request<Req>(
         &self,
         req: &Req,
-        form: Option<multipart::Form<'static>>,
+        form: Option<Form>,
     ) -> Result<Self::HttpRequest, Error>
     where
         Req: ApiRequest,
     {
         let url = format!("{}{}", self.base, Req::PATH);
 
-        event!(Level::INFO, url = ?url);
+        //event!(Level::INFO, url = ?url);
 
         let mut builder = self.client.post(&url).query(&req);
 
@@ -79,15 +87,16 @@ impl Backend for ReqwestBackend {
     async fn request_raw<Req>(
         &self,
         req: Req,
-        form: Option<multipart::Form<'static>>,
+        form: Option<Form>,
     ) -> Result<(StatusCode, Bytes), Self::Error>
     where
         Req: ApiRequest + Serialize,
     {
         let req = self.build_base_request(&req, form)?;
-        let res = self.client.request(req).await?;
+
+        let res = self.client.execute(req).await?;
         let status = res.status();
-        let body = body::to_bytes(res.into_body()).await?;
+        let body = res.bytes().await?;
 
         Ok((status, body))
     }
@@ -95,7 +104,7 @@ impl Backend for ReqwestBackend {
     fn response_to_byte_stream(
         res: Self::HttpResponse,
     ) -> Box<dyn Stream<Item = Result<Bytes, Self::Error>> + Unpin> {
-        Box::new(res.bytes_stream())
+        Box::new(res.bytes_stream().err_into())
     }
 
     fn request_stream<Res, F, OutStream>(
@@ -109,7 +118,7 @@ impl Backend for ReqwestBackend {
     {
         let stream = self
             .client
-            .request(req)
+            .execute(req)
             .err_into()
             .map_ok(move |res| {
                 match res.status() {
@@ -118,7 +127,8 @@ impl Backend for ReqwestBackend {
                     // still needs to be read so an error can be built. This block will
                     // read the entire body stream, then immediately return an error.
                     //
-                    _ => body::to_bytes(res.into_body())
+                    _ => res
+                        .bytes()
                         .boxed()
                         .map(|maybe_body| match maybe_body {
                             Ok(body) => Err(Self::process_error_from_body(body)),
