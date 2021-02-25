@@ -23,6 +23,13 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use tokio_util::codec::{Decoder, FramedRead};
 
+//Streaming response flow
+// input try stream of bytes
+//https://docs.rs/tokio-util/0.6.3/tokio_util/io/struct.StreamReader.html#method.new
+//https://docs.rs/tokio/1.2.0/tokio/io/trait.AsyncBufReadExt.html#method.lines
+//https://docs.rs/tokio-stream/0.1.3/tokio_stream/wrappers/struct.LinesStream.html#impl-Stream
+//output rust types from json
+
 #[async_trait(?Send)]
 pub trait Backend: Default {
     /// HTTP request type.
